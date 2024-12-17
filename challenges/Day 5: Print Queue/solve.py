@@ -1,9 +1,9 @@
 input_path = 'challenges/Day 5: Print Queue/input'
 
-mapping, order, inverse_order, part_1 = True, {}, {}, 0
+mapping, order, part_1 = True, {}, 0
 memo = {}
 
-must_to = lambda left, right: left in order and right in order[left]
+must_to = lambda left, right: str(left) + '|' + str(right) in order
 
 def dp(l):
     key = str(l)
@@ -22,10 +22,7 @@ with open(input_path) as f:
 
         if mapping:
             left, right = map(int, line[:-1].split('|'))
-            if left not in order: order[left] = []
-            if right not in inverse_order: inverse_order[right] = []
-            order[left].append(right)
-            inverse_order[right].append(left)
+            order[line[:-1]] = True
             memo[str([left, right])] = True
             continue
 
