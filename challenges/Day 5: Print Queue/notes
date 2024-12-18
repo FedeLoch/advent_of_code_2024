@@ -1,0 +1,21 @@
+/Users/fede/.local/share/virtualenvs/fuzzingbook-aIazvGV4/bin/python -m cProfile "/Users/fede/Documents/advent_of_code_2024/challenges/Day 5: Print Queue/solve.py"
+196660 function calls (155006 primitive calls) in 0.044 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.044    0.044 {built-in method builtins.exec}
+        1    0.001    0.001    0.044    0.044 solve.py:1(<module>)
+29972/117    0.011    0.000    0.042    0.000 solve.py:17(ordered)
+52534/40735    0.022    0.000    0.029    0.000 solve.py:6(dp)
+    34274    0.007    0.000    0.007    0.000 solve.py:4(<lambda>)
+    78492    0.002    0.000    0.002    0.000 {built-in method builtins.len}
+     1373    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method _io.open}
+        2    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        3    0.000    0.000    0.000    0.000 <frozen codecs>:319(decode)
+        3    0.000    0.000    0.000    0.000 {built-in method _codecs.utf_8_decode}
+        1    0.000    0.000    0.000    0.000 {method '__exit__' of '_io._IOBase' objects}
+        1    0.000    0.000    0.000    0.000 <frozen codecs>:309(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen codecs>:260(__init__)
