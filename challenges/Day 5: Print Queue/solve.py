@@ -1,8 +1,6 @@
 input_path = 'challenges/Day 5: Print Queue/input'
 
-mapping, order, part_1 = True, {}, 0
-memo = {}
-
+memo, order, part_1, part_2, mapping = {}, {}, 0, 0, True
 must_to = lambda left, right: str(left) + '|' + str(right) in order
 
 def dp(l):
@@ -16,6 +14,16 @@ def dp(l):
 
     return memo[key] 
 
+def ordered(l):
+    if dp(l): return l
+
+    middle = len(l) // 2
+    left, pivot, right = ordered(l[:middle]), l[middle], ordered(l[middle + 1:])
+    return left + [pivot] + right if dp(left + [pivot] + right) else ordered(
+            left[:-1] + [pivot] + [left[-1]] + right if must_to(pivot, left[-1]) else
+            left + right + [pivot]
+    )
+
 with open(input_path) as f:
     for line in f:
         if line == '\n': mapping = False; continue
@@ -27,6 +35,7 @@ with open(input_path) as f:
             continue
 
         l = list(map(int, line[:-1].split(',')))
-        part_1 += l[len(l) // 2] if dp(l) else 0
+        if (dp(l)): part_1 += l[len(l) // 2]
+        else: part_2 += ordered(l)[len(l) // 2]
 
-print('Part 1: ', part_1)
+print('Part 1: ', part_1); print('Part 2: ', part_2)
