@@ -2,8 +2,7 @@ input_path = 'challenges/Day 7: Bridge Repair/input'
 
 sum_op = lambda x, y: x + y; mul_op = lambda x, y: x * y; or_op = lambda x, y: int(str(x) + str(y))
 
-base_operations = [ sum_op, mul_op ]
-complex_operations = [ sum_op, mul_op, or_op ]
+base_operations = [ sum_op, mul_op ]; complex_operations = [ sum_op, mul_op, or_op ]
 
 def is_valid(value, current, numbers, operations, memo):
     if len(numbers) == 0: return current == value
