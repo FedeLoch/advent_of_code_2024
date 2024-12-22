@@ -9,6 +9,15 @@ def neighbors(node, graph):
         if graph[neighbor[0]][neighbor[1]] == graph[node[0]][node[1]]: res.append(neighbor)
     return res
 
+def nexts_antinodes(antinode, diff, graph):
+    if antinode == None: return []
+    antinodes, current = [], antinode
+
+    while (is_valid(current, graph)):
+        antinodes.append(current)
+        current = (current[0] + diff[0], current[1] + diff[1])
+    return antinodes
+
 def next_until_antinode(origin, diff, graph):
     current = origin
     while (is_valid(current, graph)):
@@ -18,21 +27,16 @@ def next_until_antinode(origin, diff, graph):
         return next
     return None
 
-def antinodes(graph, nodes):
+def antinodes(graph, nodes, resonance = False):
     antinodes = []
     for node in nodes:
         for neighbor in neighbors(node, graph):
             diff = (neighbor[0] - node[0], neighbor[1] - node[1])
             antinode = next_until_antinode(neighbor, diff, graph)
-            if antinode != None: antinodes.append(antinode)
+            next_antinodes = (nexts_antinodes(antinode, diff, graph) + [neighbor] if resonance else [ antinode ])
+            antinodes += list(filter(lambda x: x != None, next_antinodes))
         
     return list(set(antinodes))
 
 print('Part 1: ', len(antinodes(graph, nodes)))
-
-
-for node in antinodes(graph, nodes):
-    graph[node[0]][node[1]] = '#'
-
-for row in graph:
-    print(''.join(row))
+print('Part 2: ', len(antinodes(graph, nodes, True)))
