@@ -4,6 +4,7 @@ class Block:
     def set_next(self, next): self.next = next
     def is_free(self): None
     def to_string(self): ''
+    def delete(self): self.before.next = self.next; self.next.before = self.before
 
 class FreeBlock(Block):
     def __init__(self, size, before): super().__init__(size, before)
@@ -23,7 +24,6 @@ def get_linked_lists(numbers):
     for n in numbers[1:]:
         next = None
         size = int(n)
-        # if size == 0: continue # Tunning
         if is_block: current_block += 1; next = ProgramBlock(current_block, size, current)
         else: next = FreeBlock(size, current)
         current.set_next(next)
@@ -32,17 +32,18 @@ def get_linked_lists(numbers):
 
     return head, current
 
-next_free_block = lambda free: None if free.next == None else free.next.next
+def next_free_block(free):
+    current = free.next
+    while(current and (not current.is_free())): current = current.next
+    return current
 
 def first_no_free(last):
     current = last
-    while(current.is_free()):
-        current = current.before
+    while(current.is_free()): current = current.before
     return current
 
 def memory(head):
-    current = head
-    _str = ''
+    current = head; _str = ''
     while(current):
         _str += ('.' if current.is_free() else str(current.id)) * current.size
         current = current.next
