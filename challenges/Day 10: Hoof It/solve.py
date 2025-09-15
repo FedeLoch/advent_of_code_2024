@@ -25,4 +25,6 @@ def dp(pos, dict, memo):
     return memo[pos]
 
 part_1 = sum(map(lambda init: len(set(map(lambda l: tuple(l[-1]), dp(init, dict, memo)))), trailheads))
+part_2 = sum(map(lambda init: len(dp(init, dict, memo)), trailheads))
 print(f'Part 1: {part_1}')
+print(f'Part 2: {part_2}')
