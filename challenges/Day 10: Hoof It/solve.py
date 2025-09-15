@@ -1,32 +1,28 @@
-input_path = 'challenges/Day 10: Hoof It/bla'
-input_path2 = 'challenges/Day 10: Hoof It/bla0'
+input_path = 'challenges/Day 10: Hoof It/input'
 
-# fill in the missing hiking trails
-# componente conexa ? ( dfs | bfs ? )
-
-# only up, down, left, or right
-# todo los caminos, 
-# para cada initial ( height 0 ), todos los caminos hacia 9s
-# Una vez alcanzado un 9, no cuenta de nuevo.
-
-# Ideas:
- # O uso bellman ford para saber si hay un camino desde cada 0 a cada 9 ( que siempre puede haber más de uno )
- # O uso bfs/dfs para hacer componente conexa y guardarme los 9s visitados ( esa cantidad será el score )
-
-set1 = set()
-set0 = set()
+DIRS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+trailheads, dict, memo = [], [], {}
 with open(input_path) as f:
+    i = 0
     for line in f:
-        set1.add(line[:-1])
+        dict.append([int(num) for num in line[:-1]])
+        for j, ch in enumerate(line.strip()):
+            if ch == '0': trailheads.append((i, j))
+        i += 1
 
-print('\n')
-for error in set1:
-    print(error, '\n')
+def dp(pos, dict, memo):
+    i, j = pos
+    if dict[i][j] == 9: return [[pos]]
 
-# with open(input_path2) as f:
-#     for line in f:
-#         set0.add(line[:-1])
+    if not pos in memo:    
+        paths = []
+        for di, dj in DIRS:
+            ni, nj = i + di, j + dj
+            if (ni >=0 and nj >=0 and ni < len(dict) and nj < len(dict[0]) and int(dict[ni][nj]) == int(dict[i][j] + 1)):
+                paths += list(map(lambda l: [pos] + l, dp((ni, nj), dict, memo)))
+        memo[pos] = paths
 
-# print('\n')
-# for error in (set1.difference(set0)):
-#     print(error, '\n')
+    return memo[pos]
+
+part_1 = sum(map(lambda init: len(set(map(lambda l: tuple(l[-1]), dp(init, dict, memo)))), trailheads))
+print(f'Part 1: {part_1}')
