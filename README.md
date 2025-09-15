@@ -32,3 +32,6 @@
 
 [Day 10: Hoof It]()
 <!-- (https://github.com/FedeLochbaum/advent_of_code_2022/blob/main/challenges/Day%2010:%20Cathode-Ray%20Tube/cpu.py) -->
+
+[Day 11: Plutonian Pebbles]()
+
