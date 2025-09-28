@@ -1,4 +1,6 @@
-input_path = 'challenges/Day 12: Garden Groups/input2'
+from collections import defaultdict
+from functools import reduce
+input_path = 'challenges/Day 12: Garden Groups/input'
 
 DIRS, graph = [(0, 1), (1, 0), (0, -1), (-1, 0)], []
 
@@ -27,50 +29,55 @@ def bfs(graph, i, j, visited):
 neighbors = lambda graph, i, j: [(i + di, j + dj) for di, dj in DIRS if 0 <= i + di < len(graph) and 0 <= j + dj < len(graph[0])]
 perimeter = lambda c: sum(1 for i, j in c for di, dj in DIRS if (i + di, j + dj) not in c)
 
-removes = {
-    (0, -1): set([(0, -1), (-1, 0), (1, 0)]), (-1, 0): set([(0, -1), (-1, 0), (0, 1)]),
-    (0, 1): set([(-1, 0), (0, 1), (1, 0)]), (1, 0): set([(0, -1), (1, 0), (0, 1)])
-}
+def exposed_oriented_edges(component):
+    S, edges = set(component), set()
+    for x, y in S:
+        if (x, y+1) not in S: edges.add(((x, y+1), (x+1, y+1)))
+        if (x+1, y) not in S: edges.add(((x+1, y+1), (x+1, y)))
+        if (x, y-1) not in S: edges.add(((x+1, y), (x, y)))
+        if (x-1, y) not in S: edges.add(((x, y), (x, y+1)))
+    return edges
 
-def external_sides(component):
-    total, seen = 0, set()
-    for i, j in component:
-        external = set(DIRS)
-        for di, dj in DIRS:
-            neighbor = (i + di, j + dj)
-            if neighbor in component:
-                if neighbor in seen: external -= removes[(di, dj)]
-                else: external -= set([(di, dj)])
-        total += len(external)
-        seen.add((i, j))
-    return total
+build_directed_adj = lambda edges: reduce(lambda dict, elem: dict[elem[0]].append(elem[1]) or dict, edges, defaultdict(list))
 
-def includes(c1, c2): # TODO
-    min_i1, max_i1 = min(c1, key=lambda x: x[0])[0], max(c1, key=lambda x: x[0])[0]
-    min_j1, max_j1 = min(c1, key=lambda x: x[1])[1], max(c1, key=lambda x: x[1])[1]
-    min_i2, max_i2 = min(c2, key=lambda x: x[0])[0], max(c2, key=lambda x: x[0])[0]
-    min_j2, max_j2 = min(c2, key=lambda x: x[1])[1], max(c2, key=lambda x: x[1])[1]
-    return min_i1 <= min_i2 and max_i1 >= max_i2 and min_j1 <= min_j2 and max_j1 >= max_j2
+def extract_cycles_oriented(edges):
+    unused, adj, cycles = set(edges), build_directed_adj(edges), []
+    while unused:
+        u, v = next(iter(unused))
+        cycle = [u, v]
+        unused.discard((u, v))
+        while True:
+            curr = cycle[-1]
+            next_edge = None
+            for w in adj[curr]:
+                if (curr, w) in unused: next_edge = (curr, w); break
+            if next_edge is None: break
+            unused.discard(next_edge)
+            cycle.append(next_edge[1])
+            if cycle[-1] == cycle[0]: cycle = cycle[:-1]; break
+        cycles.append(cycle)
+    return cycles
 
-def compute_external_sides(components):
-    external_sides_ = {}
-    for c in components: external_sides_[c[0]] = external_sides(c)
-    return external_sides_
+def compress_collinear(cycle):
+    n, kept = len(cycle), []
+    for i in range(n):
+        prev = cycle[i-1]
+        curr = cycle[i]
+        nex = cycle[(i+1) % n]
+        vx1, vy1 = curr[0]-prev[0], curr[1]-prev[1]
+        vx2, vy2 = nex[0]-curr[0], nex[1]-curr[1]
+        if vx1*vy2 == vy1*vx2: continue
+        kept.append(curr)
+    return kept
 
+def polygon_vertex_count(component):
+    edges = exposed_oriented_edges(component)
+    if not edges: return 0
+    return sum(len(compress_collinear(cyc)) for cyc in extract_cycles_oriented(edges))
+
+cost2 = lambda component: polygon_vertex_count(component) * len(component)
 all_components = components(graph)
-all_external_sides = compute_external_sides(all_components)
-
-def internal_size_of(c1):
-    res = 0
-    for c2 in all_components:
-        if c1 != c2 and includes(c1, c2): res += all_external_sides[c2[0]]
-    return res
-
 cost1 = lambda c: len(c) * perimeter(c)
-def cost2(component):
-    print('Component:', graph[component[0][0]][component[0][1]], 'Size:', len(component), 'External sides:', all_external_sides[component[0]], 'Internal sides:', internal_size_of(component))
-    return (all_external_sides[component[0]] + internal_size_of(component)) * len(component)
-# cost2 = lambda component: (all_external_sides[component[0]] + internal_size_of(component)) * len(component)
 
 print('Part 1:', sum(map(cost1, all_components)))
 print('Part 2:', sum(map(cost2, all_components)))
