@@ -1,6 +1,4 @@
 from queue import PriorityQueue
-from math import gcd
-from functools import reduce
 
 def a_star(graph, initialNode, h):
   pqueue = PriorityQueue()
@@ -27,11 +25,23 @@ def a_star(graph, initialNode, h):
 
 class Prize:
   def __init__(self, a, b, goal):
-    gx = reduce(gcd, [a[0], b[0], goal[0]])
-    gy = reduce(gcd, [a[1], b[1], goal[1]])
-    self.a = a[0] // gx, a[1] // gy
-    self.b = b[0] // gx, b[1] // gy
-    self.goal = goal[0] // gx, goal[1] // gy
+    # gx = reduce(gcd, [a[0], b[0], goal[0]])
+    # gy = reduce(gcd, [a[1], b[1], goal[1]])
+    # self.a = a[0] // gx, a[1] // gy
+    # self.b = b[0] // gx, b[1] // gy
+    # self.goal = goal[0] // gx, goal[1] // gy
+    self.a = a
+    self.b = b
+    self.goal = (goal[0] + 10**13, goal[1] + 10**13)
+
+  def solve(self):
+    d = (self.a[0] * self.b[1]) - (self.a[1] * self.b[0])
+    dx = (self.goal[0] * self.b[1]) - (self.goal[1] * self.b[0])
+    dy = (self.a[0] * self.goal[1]) - (self.a[1] * self.goal[0])
+    if (dx % d != 0 or dy % d != 0 ): return 0
+    a = dx // d
+    b = dy // d
+    return a * 3 + b
 
   def h(self):
     return lambda node: abs(self.goal[0] - node[0][0]) + abs(self.goal[1] - node[0][1])
